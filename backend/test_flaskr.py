@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from flaskr import create_app
 from models import setup_db, Question, Category
+from config import TEST_DB_NAME, DB_USER, DB_PASSWORD
 
 
 class TriviaTestCase(unittest.TestCase):
@@ -14,8 +15,8 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "trivia_test"
-        self.database_path = "postgresql://{}:{}@{}/{}".format('student', 'student', 'localhost:5432', self.database_name)
+        self.database_name = TEST_DB_NAME
+        self.database_path = "postgresql://{}:{}@{}/{}".format(DB_USER, DB_PASSWORD, 'localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         self.new_question = {"question": "What does API stands for?", "answer": "Application Programming Interface", "category" : '1', "difficulty" : 1}
@@ -129,7 +130,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['currentCategory'])
     
     def test_404_if_categories_does_not_exit(self):
-        res = self.client().post("/categories/100/questions")
+        res = self.client().get("/categories/100/questions")
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
